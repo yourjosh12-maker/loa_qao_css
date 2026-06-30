@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyceum of Alabang Inc. - QAO Feedback Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .step-transition { transition: all 0.3s ease-in-out; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0a2359; }
+
+        /* FULL FRAME CAMPUS WATERMARK BACKDROP */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('loa-bldg-jpg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.06;
+            z-index: -1;
+            pointer-events: none;
+            filter: grayscale(30%);
+        }
+    </style>
+    <script src="config.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-[#0a2359] text-white shadow-md py-3 px-6 sticky top-0 z-50 border-b-4 border-[#f7c74b]">
+        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="bg-white p-1 rounded-full shadow-sm flex items-center justify-center h-14 w-14 overflow-hidden">
+                    <img src="loa-logo-jpg.png" alt="Lyum of Alabang Logo" class="max-h-full max-w-full object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <span class="text-[#0a2359] font-black text-xs hidden text-center">LOA Logo</span>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg sm:text-xl leading-tight tracking-wide text-[#f7c74b]">Lyceum of Alabang Inc.</h1>
+                    <p class="text-xs text-slate-200 font-semibold tracking-wider">Customer Satisfaction and Feedback Survey</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="flex bg-slate-900/40 p-1 rounded-xl border border-slate-700 text-xs font-bold shadow-inner">
+                    <button id="hub-mode-file" class="px-4 py-1.5 rounded-lg text-white bg-[#0a2359] border border-[#f7c74b]/30 transition-all" onclick="switchPortalMode('FILE')">
+                        <i class="fa-solid fa-pen-to-square mr-1"></i> File Feedback
+                    </button>
+                    <button id="hub-mode-track" class="px-4 py-1.5 rounded-lg text-slate-300 hover:text-white transition-all" onclick="switchPortalMode('TRACK')">
+                        <i class="fa-solid fa-magnifying-glass mr-1"></i> Track Ticket
+                    </button>
+                </div>
+                
+                <div class="hidden md:block h-6 w-px bg-slate-600"></div>
+                <a href="admin/login.php" class="text-xs font-bold text-slate-300 hover:text-[#f7c74b] transition-all flex items-center gap-1">
+                    <i class="fa-solid fa-lock text-[10px]"></i> Staff Login
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-4xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+        
+        <div id="survey-card" class="bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden flex flex-col max-w-2xl w-full mx-auto min-h-[580px]">
+            
+            <div id="wizard-progress-bar" class="bg-slate-50 border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500" id="step-label">Loading Framework Content...</span>
+                <div class="flex gap-2" id="step-dots">
+                    <span class="w-8 h-2 rounded-full bg-slate-200 step-dot transition-all duration-300"></span>
+                    <span class="w-8 h-2 rounded-full bg-slate-200 step-dot transition-all duration-300"></span>
+                    <span class="w-8 h-2 rounded-full bg-slate-200 step-dot transition-all duration-300"></span>
+                    <span class="w-8 h-2 rounded-full bg-slate-200 step-dot transition-all duration-300"></span>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8 flex-grow flex flex-col justify-between">
+                
+                <div id="screen-1" class="step-content space-y-4">
+                    <div class="text-center pb-2 border-b border-slate-100">
+                        <i class="fa-solid fa-shield-halved text-[#0a2359] text-5xl mb-2"></i>
+                        <h2 id="privacy-title" class="text-xl font-extrabold text-slate-800"></h2>
+                        <p id="privacy-subtitle" class="text-sm text-slate-500"></p>
+                    </div>
+                    
+                    <div id="privacy-content-box" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 space-y-3 max-h-56 overflow-y-auto leading-relaxed"></div>
+
+                    <div class="flex items-start gap-3 bg-slate-50 border border-slate-200 p-4 rounded-xl focus-within:border-[#0a2359] transition-all">
+                        <input type="checkbox" id="consent-check" class="mt-1 w-5 h-5 rounded border-slate-300 text-[#0a2359] focus:ring-[#0a2359] cursor-pointer" onchange="toggleNextButton()">
+                        <label id="consent-label" for="consent-check" class="text-sm text-slate-700 font-medium cursor-pointer leading-snug"></label>
+                    </div>
+                </div>
+
+                <div id="screen-2" class="step-content space-y-4 hidden">
+                    <div class="text-center pb-2 border-b border-slate-100">
+                        <i class="fa-solid fa-user-check text-[#0a2359] text-5xl mb-2"></i>
+                        <h2 class="text-xl font-extrabold text-slate-800">Global Identity Profile</h2>
+                        <p class="text-sm text-slate-500">Provide foundational respondent information</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                        <div class="sm:col-span-5">
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Surname *</label>
+                            <input type="text" id="surname-input" placeholder="e.g., Dela Cruz" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0a2359]" oninput="validateIdentityScreen()">
+                        </div>
+                        <div class="sm:col-span-5">
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">First Name *</label>
+                            <input type="text" id="firstname-input" placeholder="e.g., Juan" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0a2359]" oninput="validateIdentityScreen()">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">M.I.</label>
+                            <input type="text" id="mi-input" placeholder="A" maxlength="2" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm text-center focus:outline-none focus:ring-2 focus:ring-[#0a2359]">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-600 uppercase">Contact Email Address *</label>
+                        <p class="text-[11px] text-slate-400 mb-1">Required to notify you of the corrective actions taken by the office in response to your feedback.</p>
+                        <input type="email" id="email-input" placeholder="e.g., juan.delacruz@example.com" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0a2359]" oninput="validateIdentityScreen()">
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Classification / Role *</label>
+                        <select id="role-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="handleRoleChange(); validateIdentityScreen();">
+                            <option value="">-- Select Your Role --</option>
+                            <option value="Student">Student</option>
+                            <option value="Parent/Guardian">Parent/Guardian</option>
+                            <option value="Alumni">Alumni</option>
+                            <option value="Faculty">Faculty</option>
+                            <option value="Non-Teaching Staff">Non-Teaching Staff</option>
+                            <option value="Industry Partner">Industry Partner</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="screen-3" class="step-content space-y-4 hidden">
+                    <div class="text-center pb-2 border-b border-slate-100">
+                        <i class="fa-solid fa-sliders text-[#0a2359] text-5xl mb-2"></i>
+                        <h2 class="text-xl font-extrabold text-slate-800">Demographic Specifics</h2>
+                        <p class="text-sm text-slate-500" id="profile-sub-title">Detailed profile metrics required</p>
+                    </div>
+
+                    <div id="meta-student" class="space-y-3 hidden">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Student ID Number *</label>
+                            <input type="text" id="stud-no-input" placeholder="e.g., 2024-00123" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0a2359]" oninput="validateProfileScreen()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">School Level Division *</label>
+                            <select id="year-cat-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="handleYearLevelSelect(); validateProfileScreen();">
+                                <option value="">-- Choose Division Category --</option>
+                                <option value="Kindergarten">Kindergarten</option>
+                                <option value="Elementary">Elementary (Grades 1-6)</option>
+                                <option value="JHS">Junior High School (Grades 7-10)</option>
+                                <option value="SHS">Senior High School (Grades 11-12)</option>
+                                <option value="College">Higher Education (College Programs)</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        
+                        <div id="stud-sub-dropdowns" class="space-y-3">
+                            <div id="elem-dropdown" class="hidden">
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Elementary Grade Level *</label>
+                                <select id="elem-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="validateProfileScreen()">
+                                    <option value="">-- Grade Level --</option>
+                                    <option value="Grade 1">Grade 1</option><option value="Grade 2">Grade 2</option><option value="Grade 3">Grade 3</option><option value="Grade 4">Grade 4</option><option value="Grade 5">Grade 5</option><option value="Grade 6">Grade 6</option>
+                                </select>
+                            </div>
+                            <div id="jhs-dropdown" class="hidden">
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">JHS Grade Level *</label>
+                                <select id="jhs-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="validateProfileScreen()">
+                                    <option value="">-- Grade Level --</option>
+                                    <option value="Grade 7">Grade 7</option><option value="Grade 8">Grade 8</option><option value="Grade 9">Grade 9</option><option value="Grade 10">Grade 10</option>
+                                </select>
+                            </div>
+                            <div id="shs-dropdown" class="hidden">
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">SHS Configuration *</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <select id="shs-yr-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="validateProfileScreen()">
+                                        <option value="">-- Grade Level --</option>
+                                        <option value="Grade 11">Grade 11</option><option value="Grade 12">Grade 12</option>
+                                    </select>
+                                    <select id="shs-strand-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="validateProfileScreen()">
+                                        <option value="">-- Select Strand --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="college-dropdown" class="hidden">
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">College Program Setup *</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <select id="coll-yr-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="validateProfileScreen()">
+                                        <option value="">-- Year Level --</option>
+                                        <option value="1st Year">1st Year</option><option value="2nd Year">2nd Year</option><option value="3rd Year">3rd Year</option><option value="4th Year">4th Year</option>
+                                    </select>
+                                    <select id="coll-dept-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="validateProfileScreen()">
+                                        <option value="">-- Program Dept --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="grad-dropdown" class="hidden">
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Others Option Selection *</label>
+                                <select id="grad-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="validateProfileScreen()">
+                                    <option value="">-- Select Program --</option>
+                                    <option value="Juris Doctor">Juris Doctor (Law Program)</option>
+                                    <option value="Technical-Vocational Program">Technical-Vocational Program</option>
+                                    <option value="Professional Teaching Certificate Program (PTCP)">Professional Teaching Certificate Program (PTCP)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="meta-alumni" class="space-y-3 hidden">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Highest LOA Level Completed *</label>
+                            <select id="alumni-level-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="validateProfileScreen()">
+                                <option value="">-- Select Completed Level --</option>
+                                <option value="Basic Ed">Basic Education (JHS / SHS)</option>
+                                <option value="College">Higher Education (College Programs)</option>
+                                <option value="Graduate School">Graduate Programs</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Completion Year *</label>
+                                <input type="number" id="alumni-yr-input" placeholder="e.g., 2023" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0a2359]" oninput="validateProfileScreen()">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Employment Status *</label>
+                                <select id="alumni-employment" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="handleAlumniEmployment(); validateProfileScreen();">
+                                    <option value="">-- Select Status --</option>
+                                    <option value="Employed">Employed</option>
+                                    <option value="Unemployed">Unemployed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="alumni-company-box" class="hidden">
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Current Company Name *</label>
+                            <input type="text" id="alumni-company" placeholder="e.g., Shell Philippines" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0a2359]" oninput="validateProfileScreen()">
+                        </div>
+                    </div>
+
+                    <div id="meta-staff" class="space-y-3 hidden">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Employee Number *</label>
+                            <input type="text" id="emp-no-input" placeholder="e.g., EMP-2022-0943" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0a2359]" oninput="validateProfileScreen()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Home Department / Office Assignment *</label>
+                            <select id="staff-dept-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="validateProfileScreen()">
+                                <option value="">-- Choose Home Department --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="meta-partner" class="space-y-3 hidden">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Company / Organization *</label>
+                            <input type="text" id="partner-company" placeholder="e.g., Accenture Philippines" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0a2359]" oninput="validateProfileScreen()">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="screen-4" class="step-content space-y-4 hidden">
+                    <div class="text-center pb-2 border-b border-slate-100">
+                        <i class="fa-solid fa-square-poll-horizontal text-[#0a2359] text-5xl mb-2"></i>
+                        <h2 id="eval-title" class="text-xl font-extrabold text-slate-800"></h2>
+                        <p id="eval-subtitle" class="text-sm text-slate-500"></p>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Target Office to Rate *</label>
+                        <select id="target-office-select" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onchange="validateEvaluationScreen()">
+                            <option value="">-- Select Office / Department --</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-slate-50 border-l-4 border-[#0a2359] p-3 rounded-r-lg text-xs text-slate-600 space-y-1.5">
+                        <p id="eval-instructions-title" class="font-bold text-[#0a2359]"></p>
+                        <p id="eval-instructions-text"></p>
+                        <div id="eval-legend-container" class="grid grid-cols-5 text-center font-bold bg-white border border-slate-200 rounded p-1.5 text-[10px] text-slate-500 shadow-sm gap-1"></div>
+                    </div>
+
+                    <div id="eval-questions-container" class="space-y-4 pt-1 max-h-52 overflow-y-auto pr-1"></div>
+                    <div id="eval-openended-container" class="space-y-3 pt-2"></div>
+                </div>
+
+                <div id="screen-success" class="step-content space-y-6 py-6 text-center hidden">
+                    <div>
+                        <div class="mx-auto w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-circle-check text-4xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-slate-800">Feedback Submitted Successfully!</h2>
+                        <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">Your review has been securely saved. The Quality Assurance Office has processed your submission and initiated the routing loop.</p>
+                    </div>
+                    
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 max-w-sm mx-auto space-y-2 text-left">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-500 uppercase font-bold tracking-wider">Reference Code</span>
+                            <span id="success-ticket-id" class="font-mono font-bold text-[#0a2359]">LOA-QAO-XXXX</span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs border-t border-slate-200/60 pt-2">
+                            <span class="text-slate-500 uppercase font-bold tracking-wider">Status</span>
+                            <span class="text-orange-600 font-bold bg-orange-50 px-2 py-0.5 rounded border border-orange-200">New Submission</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-2 text-center border-t border-slate-200/60 pt-2 font-medium">Keep your reference code handy. We'll contact you with updates via email.</p>
+                    </div>
+
+                    <button class="px-6 py-2.5 rounded-lg text-xs font-bold bg-[#0a2359] text-white hover:bg-opacity-90 shadow-md transition-all uppercase tracking-wider border border-transparent focus:outline-none focus:ring-2 focus:ring-[#f7c74b]" onclick="window.location.reload();">
+                        Submit Another Survey
+                    </button>
+                </div>
+
+                <div id="form-controls" class="mt-6 pt-4 border-t border-slate-100 flex justify-between gap-4">
+                    <button id="prev-btn" class="px-5 py-2 rounded-lg text-sm font-bold border border-slate-300 text-slate-600 hover:bg-slate-50 hidden transition-all focus:outline-none focus:ring-2 focus:ring-[#0a2359]" onclick="changeStep(-1)">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Back
+                    </button>
+                    <div class="flex-grow"></div>
+                    <button id="next-btn" class="px-6 py-2 rounded-lg text-sm font-bold bg-[#0a2359] text-white hover:bg-opacity-95 disabled:opacity-35 disabled:cursor-not-allowed shadow transition-all focus:outline-none focus:ring-2 focus:ring-[#f7c74b]" disabled onclick="changeStep(1)">
+                        Next <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tracking-card" class="bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden hidden max-w-xl w-full mx-auto p-6 md:p-8 space-y-6">
+            <div class="text-center pb-2 border-b border-slate-100">
+                <i class="fa-solid fa-magnifying-glass text-[#0a2359] text-5xl mb-2"></i>
+                <h2 class="text-xl font-extrabold text-slate-800">Track Loop Resolution</h2>
+                <p class="text-sm text-slate-500">Monitor live corrective actions taken by departments</p>
+            </div>
+            
+            <div class="flex gap-2">
+                <input type="text" id="track-ticket-input" placeholder="Enter Reference Code (e.g., LOA-QAO-12345)" class="flex-grow px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0a2359] font-mono font-bold uppercase tracking-wider">
+                <button class="bg-[#0a2359] text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-opacity-90 transition-all shadow border border-transparent" onclick="lookupTrackingTicket()">
+                    Search
+                </button>
+            </div>
+
+            <div id="tracking-result-box" class="hidden space-y-4">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col gap-1 text-xs">
+                    <div><span class="text-slate-400 font-bold uppercase">Target Unit:</span> <span id="lbl-track-dept" class="font-bold text-[#0a2359]"></span></div>
+                    <div><span class="text-slate-400 font-bold uppercase">Filed On:</span> <span id="lbl-track-date" class="font-semibold text-slate-700"></span></div>
+                </div>
+
+                <div class="relative pl-6 border-l-2 border-slate-200 space-y-6 text-sm ml-2" id="timeline-flow-box">
+                    <div class="relative" id="tl-step-1">
+                        <div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-slate-300 border-4 border-white transition-all" id="dot-step-1"></div>
+                        <p class="font-bold text-slate-700 text-xs uppercase" id="title-step-1">1. New Submission Received</p>
+                        <p class="text-xs text-slate-400">The feedback system logged your evaluation parameter and issued an index reference tracking code.</p>
+                    </div>
+                    <div class="relative" id="tl-step-2">
+                        <div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-slate-300 border-4 border-white transition-all" id="dot-step-2"></div>
+                        <p class="font-bold text-slate-700 text-xs uppercase" id="title-step-2">2. Under Review by QAO</p>
+                        <p class="text-xs text-slate-400">The Quality Assurance Office is auditing scores and stripping identifying values to route comments anonymously.</p>
+                    </div>
+                    <div class="relative" id="tl-step-3">
+                        <div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-slate-300 border-4 border-white transition-all" id="dot-step-3"></div>
+                        <p class="font-bold text-slate-700 text-xs uppercase" id="title-step-3">3. Action Plan Generated</p>
+                        <p class="text-xs text-slate-400">The target department head has submitted an official corrective countermeasure strategy into the master index.</p>
+                        <div id="lbl-proposed-action-box" class="mt-2 p-2.5 bg-[#f7c74b]/10 border border-[#f7c74b]/30 rounded-lg text-xs text-slate-700 hidden">
+                            <strong class="text-[#0a2359] block mb-0.5"><i class="fa-solid fa-gears"></i> Implemented Resolution Strategy:</strong>
+                            <span id="lbl-proposed-action-text" class="italic"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tracking-error-box" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-center text-xs font-bold text-red-600">
+                <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Invalid Code: No tracking record matched this reference token.
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-200 border-t border-slate-300 py-4 px-6 text-center text-xs font-semibold text-[#0a2359] tracking-wider mt-auto">
+        <p>&copy; 2026 Lyceum of Alabang Inc. All Rights Reserved. | Project of Rohcell King D. Sisit</p>
+    </footer>
+
+    <script>
+        let currentStep = 1;
+        let selectedRole = "";
+        let surveyData = {
+            metadata: { consent_agreed: false, timestamp: "" },
+            identity: { surname: "", firstname: "", middle_initial: "", contact_email: "", role: "" },
+            profile: {},
+            evaluation: { target_office: "", ratings: {}, openEndedResponses: {} }
+        };
+
+        window.onload = function() {
+            initializeDynamicContent();
+        };
+
+        function switchPortalMode(mode) {
+            const fileBtn = document.getElementById('hub-mode-file');
+            const trackBtn = document.getElementById('hub-mode-track');
+            const surveyCard = document.getElementById('survey-card');
+            const trackCard = document.getElementById('tracking-card');
+
+            if (mode === 'FILE') {
+                fileBtn.className = "px-4 py-1.5 rounded-lg text-white bg-[#0a2359] border border-[#f7c74b]/30 transition-all";
+                trackBtn.className = "px-4 py-1.5 rounded-lg text-slate-300 hover:text-white transition-all";
+                surveyCard.classList.remove('hidden');
+                trackCard.classList.add('hidden');
+            } else {
+                trackBtn.className = "px-4 py-1.5 rounded-lg text-white bg-[#0a2359] border border-[#f7c74b]/30 transition-all";
+                fileBtn.className = "px-4 py-1.5 rounded-lg text-slate-300 hover:text-white transition-all";
+                surveyCard.classList.add('hidden');
+                trackCard.classList.remove('hidden');
+            }
+        }
+
+        function initializeDynamicContent() {
+            document.getElementById('privacy-title').textContent = SURVEY_CONFIG.privacy.title;
+            document.getElementById('privacy-subtitle').textContent = SURVEY_CONFIG.privacy.subtitle;
+            document.getElementById('consent-label').textContent = SURVEY_CONFIG.privacy.checkboxLabel;
+
+            const privacyBox = document.getElementById('privacy-content-box');
+            privacyBox.innerHTML = '';
+            SURVEY_CONFIG.privacy.sections.forEach(sec => {
+                const headPara = document.createElement('p');
+                headPara.className = "font-bold text-slate-800";
+                headPara.textContent = sec.heading;
+                
+                const bodyPara = document.createElement('p');
+                bodyPara.textContent = sec.text;
+                
+                privacyBox.appendChild(headPara);
+                privacyBox.appendChild(bodyPara);
+            });
+
+            document.getElementById('eval-title').textContent = SURVEY_CONFIG.evaluation.title;
+            document.getElementById('eval-subtitle').textContent = SURVEY_CONFIG.evaluation.subtitle;
+            document.getElementById('eval-instructions-title').textContent = SURVEY_CONFIG.evaluation.instructionsTitle;
+            document.getElementById('eval-instructions-text').textContent = SURVEY_CONFIG.evaluation.instructionsText;
+
+            const legendContainer = document.getElementById('eval-legend-container');
+            legendContainer.innerHTML = '';
+            for (let score = 5; score >= 1; score--) {
+                const stepCell = document.createElement('div');
+                stepCell.className = score > 1 ? "border-r border-slate-200" : "";
+                stepCell.innerHTML = `<strong>${score}</strong><br><span class="font-normal text-[9px] text-slate-500 block sm:inline leading-tight">${SURVEY_CONFIG.evaluation.legend[score]}</span>`;
+                legendContainer.appendChild(stepCell);
+            }
+
+            const questionsContainer = document.getElementById('eval-questions-container');
+            questionsContainer.innerHTML = '';
+            SURVEY_CONFIG.evaluation.questions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "space-y-2 pb-3 border-b border-slate-100 last:border-0";
+                qDiv.innerHTML = `
+                    <p class="text-xs sm:text-sm font-bold text-slate-700">${index + 1}. ${q.text} *</p>
+                    <div class="flex justify-between items-center bg-slate-50 p-2.5 border border-slate-200 rounded-lg">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider pl-1">Score:</span>
+                        <div class="flex gap-4">
+                            ${[5, 4, 3, 2, 1].map(score => `
+                                <label class="flex items-center gap-1 cursor-pointer font-bold text-xs sm:text-sm text-slate-600">
+                                    <input type="radio" name="rate-${q.id}" value="${score}" class="w-4 h-4 text-[#0a2359] focus:ring-[#0a2359]" onchange="validateEvaluationScreen()"> ${score}
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                questionsContainer.appendChild(qDiv);
+            });
+
+            const openEndedContainer = document.getElementById('eval-openended-container');
+            openEndedContainer.innerHTML = '';
+            SURVEY_CONFIG.evaluation.openEnded.forEach(field => {
+                const fieldDiv = document.createElement('div');
+                fieldDiv.className = "space-y-1";
+                fieldDiv.innerHTML = `
+                    <label class="block text-xs font-bold text-slate-700 uppercase">${field.label}</label>
+                    <textarea id="feedback-${field.id}" rows="2" placeholder="${field.placeholder}" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0a2359]" oninput="validateEvaluationScreen()"></textarea>
+                `;
+                openEndedContainer.appendChild(fieldDiv);
+            });
+
+            const sortedDepts = [...SURVEY_CONFIG.departments].sort((a, b) => a.name.localeCompare(b.name));
+            const targetOfficeSelect = document.getElementById('target-office-select');
+            const staffDeptSelect = document.getElementById('staff-dept-select');
+            const shsStrandSelect = document.getElementById('shs-strand-select');
+            const collDeptSelect = document.getElementById('coll-dept-select');
+
+            sortedDepts.forEach(dept => {
+                const opt = document.createElement('option');
+                opt.value = dept.code;
+                opt.textContent = `${dept.name} (${dept.code})`;
+                targetOfficeSelect.appendChild(opt);
+            });
+
+            sortedDepts.forEach(dept => {
+                const opt = document.createElement('option');
+                opt.value = dept.code;
+                opt.textContent = `${dept.name} (${dept.code})`;
+                staffDeptSelect.appendChild(opt);
+            });
+
+            SURVEY_CONFIG.shsStrands.forEach(strand => {
+                const opt = document.createElement('option');
+                opt.value = strand; opt.textContent = strand;
+                shsStrandSelect.appendChild(opt);
+            });
+
+            SURVEY_CONFIG.collegePrograms.forEach(prog => {
+                const opt = document.createElement('option');
+                opt.value = prog.code; opt.textContent = prog.name;
+                collDeptSelect.appendChild(opt);
+            });
+
+            changeStep(0); 
+        }
+
+        function toggleNextButton() {
+            const consentCheck = document.getElementById('consent-check');
+            surveyData.metadata.consent_agreed = consentCheck.checked;
+            surveyData.metadata.timestamp = consentCheck.checked ? new Date().toISOString() : "";
+            document.getElementById('next-btn').disabled = !consentCheck.checked;
+        }
+
+        function changeStep(direction) {
+            if (currentStep === 4 && direction === 1) {
+                executeDatabaseSubmission();
+                return;
+            }
+
+            document.getElementById(`screen-${currentStep}`).classList.add('hidden');
+            currentStep += direction;
+            document.getElementById(`screen-${currentStep}`).classList.remove('hidden');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            
+            document.getElementById('step-label').innerText = `Step ${currentStep} of 4: ` + 
+                (currentStep === 1 ? 'Compliance' : 
+                 currentStep === 2 ? 'Global Identity' : 
+                 currentStep === 3 ? 'Demographic Specifics' : 'Service Evaluation Matrix');
+
+            const dots = document.querySelectorAll('.step-dot');
+            dots.forEach((dot, idx) => {
+                if (idx < currentStep) {
+                    dot.classList.remove('bg-slate-200');
+                    dot.classList.add('bg-[#0a2359]');
+                } else {
+                    dot.classList.remove('bg-[#0a2359]');
+                    dot.classList.add('bg-slate-200');
+                }
+            });
+
+            if (currentStep === 1) {
+                prevBtn.classList.add('hidden');
+                toggleNextButton();
+            } else {
+                prevBtn.classList.remove('hidden');
+                nextBtn.disabled = false;
+            }
+
+            if (currentStep === 2) validateIdentityScreen();
+            else if (currentStep === 3) validateProfileScreen();
+            else if (currentStep === 4) {
+                nextBtn.innerHTML = `Submit Survey Form <i class="fa-solid fa-paper-plane ml-1"></i>`;
+                validateEvaluationScreen();
+            } else {
+                nextBtn.innerHTML = `Next <i class="fa-solid fa-arrow-right ml-1"></i>`;
+            }
+        }
+
+        function handleRoleChange() {
+            const roleSelect = document.getElementById('role-select');
+            selectedRole = roleSelect.value;
+            surveyData.identity.role = selectedRole;
+            surveyData.profile = {}; 
+
+            document.getElementById('meta-student').classList.add('hidden');
+            document.getElementById('meta-alumni').classList.add('hidden');
+            document.getElementById('meta-staff').classList.add('hidden');
+            document.getElementById('meta-partner').classList.add('hidden');
+
+            if (!selectedRole) return;
+            document.getElementById('profile-sub-title').innerText = `Role Context Settings: ${selectedRole}`;
+
+            if (selectedRole === 'Student' || selectedRole === 'Parent/Guardian') {
+                document.getElementById('meta-student').classList.remove('hidden');
+            } else if (selectedRole === 'Alumni') {
+                document.getElementById('meta-alumni').classList.remove('hidden');
+            } else if (selectedRole === 'Faculty' || selectedRole === 'Non-Teaching Staff') {
+                document.getElementById('meta-staff').classList.remove('hidden');
+            } else if (selectedRole === 'Industry Partner') {
+                document.getElementById('meta-partner').classList.remove('hidden');
+            }
+        }
+
+        function handleYearLevelSelect() {
+            const category = document.getElementById('year-cat-select').value;
+            surveyData.profile.academic_category = category;
+
+            document.getElementById('elem-dropdown').classList.add('hidden');
+            document.getElementById('jhs-dropdown').classList.add('hidden');
+            document.getElementById('shs-dropdown').classList.add('hidden');
+            document.getElementById('college-dropdown').classList.add('hidden');
+            document.getElementById('grad-dropdown').classList.add('hidden');
+
+            if (category === 'Elementary') document.getElementById('elem-dropdown').classList.remove('hidden');
+            else if (category === 'JHS') document.getElementById('jhs-dropdown').classList.remove('hidden');
+            else if (category === 'SHS') document.getElementById('shs-dropdown').classList.remove('hidden');
+            else if (category === 'College') document.getElementById('college-dropdown').classList.remove('hidden');
+            else if (category === 'Others') document.getElementById('grad-dropdown').classList.remove('hidden');
+        }
+
+        function handleAlumniEmployment() {
+            const empStatus = document.getElementById('alumni-employment').value;
+            surveyData.profile.employment_status = empStatus;
+            
+            if (empStatus === 'Employed') {
+                document.getElementById('alumni-company-box').classList.remove('hidden');
+            } else {
+                document.getElementById('alumni-company-box').classList.add('hidden');
+                document.getElementById('alumni-company').value = "";
+                delete surveyData.profile.company_name;
+            }
+        }
+
+        function validateIdentityScreen() {
+            surveyData.identity.surname = document.getElementById('surname-input').value.trim();
+            surveyData.identity.firstname = document.getElementById('firstname-input').value.trim();
+            surveyData.identity.middle_initial = document.getElementById('mi-input').value.trim();
+            surveyData.identity.contact_email = document.getElementById('email-input').value.trim();
+            surveyData.identity.role = document.getElementById('role-select').value;
+
+            const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(surveyData.identity.contact_email);
+            const isValid = surveyData.identity.surname && surveyData.identity.firstname && isEmailValid && surveyData.identity.role;
+            document.getElementById('next-btn').disabled = !isValid;
+        }
+
+        function validateProfileScreen() {
+            let isValid = false;
+            if (selectedRole === 'Student' || selectedRole === 'Parent/Guardian') {
+                const studNo = document.getElementById('stud-no-input').value.trim();
+                const yearCat = document.getElementById('year-cat-select').value;
+                surveyData.profile.id_number = studNo;
+                surveyData.profile.academic_category = yearCat;
+                if (studNo && yearCat) {
+                    if (yearCat === 'Kindergarten') isValid = true;
+                    else if (yearCat === 'Elementary' && document.getElementById('elem-select').value) {
+                        surveyData.profile.sub_level = document.getElementById('elem-select').value;
+                        isValid = true;
+                    } else if (yearCat === 'JHS' && document.getElementById('jhs-select').value) {
+                        surveyData.profile.sub_level = document.getElementById('jhs-select').value;
+                        isValid = true;
+                    } else if (yearCat === 'SHS' && document.getElementById('shs-yr-select').value && document.getElementById('shs-strand-select').value) {
+                        surveyData.profile.sub_level = document.getElementById('shs-yr-select').value;
+                        surveyData.profile.track_or_strand = document.getElementById('shs-strand-select').value; isValid = true;
+                    } else if (yearCat === 'College' && document.getElementById('coll-yr-select').value && document.getElementById('coll-dept-select').value) {
+                        surveyData.profile.sub_level = document.getElementById('coll-yr-select').value;
+                        surveyData.profile.program_dept = document.getElementById('coll-dept-select').value; isValid = true;
+                    } else if (yearCat === 'Others' && document.getElementById('grad-select').value) {
+                        surveyData.profile.sub_level = document.getElementById('grad-select').value;
+                        isValid = true;
+                    }
+                }
+            } else if (selectedRole === 'Alumni') {
+                const alumLvl = document.getElementById('alumni-level-select').value;
+                const alumYr = document.getElementById('alumni-yr-input').value;
+                const alumEmp = document.getElementById('alumni-employment').value;
+                surveyData.profile.highest_level = alumLvl;
+                surveyData.profile.completion_year = alumYr;
+                surveyData.profile.employment_status = alumEmp;
+                if (alumLvl && alumYr && alumEmp) {
+                    if (alumEmp === 'Employed') {
+                        const comp = document.getElementById('alumni-company').value.trim();
+                        surveyData.profile.company_name = comp; isValid = comp !== "";
+                    } else { isValid = true; }
+                }
+            } else if (selectedRole === 'Faculty' || selectedRole === 'Non-Teaching Staff') {
+                const empNo = document.getElementById('emp-no-input').value.trim();
+                const dept = document.getElementById('staff-dept-select').value;
+                surveyData.profile.id_number = empNo;
+                surveyData.profile.department_assignment = dept;
+                isValid = empNo && dept;
+            } else if (selectedRole === 'Industry Partner') {
+                const partnerComp = document.getElementById('partner-company').value.trim();
+                surveyData.profile.company_name = partnerComp; isValid = partnerComp !== "";
+            }
+
+            document.getElementById('next-btn').disabled = !isValid;
+        }
+
+        function validateEvaluationScreen() {
+            let isValid = true;
+            const targetOffice = document.getElementById('target-office-select').value;
+            surveyData.evaluation.target_office = targetOffice;
+            if (!targetOffice) isValid = false;
+
+            surveyData.evaluation.ratings = {};
+            SURVEY_CONFIG.evaluation.questions.forEach(q => {
+                const checkedRadio = document.querySelector(`input[name="rate-${q.id}"]:checked`);
+                if (checkedRadio) {
+                    surveyData.evaluation.ratings[q.id] = checkedRadio.value;
+                } else {
+                    isValid = false; 
+                }
+            });
+            surveyData.evaluation.openEndedResponses = {};
+            SURVEY_CONFIG.evaluation.openEnded.forEach(field => {
+                const value = document.getElementById(`feedback-${field.id}`).value.trim();
+                surveyData.evaluation.openEndedResponses[field.id] = value;
+                if (!value) isValid = false; 
+            });
+            document.getElementById('next-btn').disabled = !isValid;
+        }
+
+        async function executeDatabaseSubmission() {
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-2"></i> Submitting Feedback...`;
+
+            // EXPANDED PAYLOAD: Explicitly maps and transmits all demographic variables gathered across form steps to match PDO columns
+            const finalPayload = {
+                surname: surveyData.identity.surname,
+                first_name: surveyData.identity.firstname,
+                middle_initial: surveyData.identity.middle_initial,
+                email: surveyData.identity.contact_email,
+                role: surveyData.identity.role,
+                
+                // Relational breakdown elements mapped from step 3 object matrices
+                id_number: surveyData.profile.id_number || null,
+                academic_category: surveyData.profile.academic_category || null,
+                sub_level: surveyData.profile.sub_level || null,
+                track_or_strand: surveyData.profile.track_or_strand || null,
+                program_dept: surveyData.profile.program_dept || null,
+                highest_level: surveyData.profile.highest_level || null,
+                completion_year: surveyData.profile.completion_year || null,
+                employment_status: surveyData.profile.employment_status || null,
+                company_name: surveyData.profile.company_name || null,
+                department_assignment: surveyData.profile.department_assignment || null,
+                
+                target_department: surveyData.evaluation.target_office,
+                q1: parseInt(surveyData.evaluation.ratings.q1) || 0,
+                q2: parseInt(surveyData.evaluation.ratings.q2) || 0,
+                q3: parseInt(surveyData.evaluation.ratings.q3) || 0,
+                q4: parseInt(surveyData.evaluation.ratings.q4) || 0,
+                q5: parseInt(surveyData.evaluation.ratings.q5) || 0,
+                
+                // Fixed the open ended object key lookup pointer mismatch
+                appreciate: surveyData.evaluation.openEndedResponses.appreciate || "",
+                improvements: surveyData.evaluation.openEndedResponses.improvements || ""
+            };
+
+            // Set up fallback to look inside our localized folder architecture if no manual endpoint is declared
+            const activeUrl = SURVEY_CONFIG.apiEndpoint || "submit_feedback.php";
+
+            try {
+                const response = await fetch(activeUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(finalPayload)
+                });
+                
+                const result = await response.json();
+                if (result.status === "SUCCESS") {
+                    showSuccessScreen(result.ticket_id);
+                } else {
+                    throw new Error(result.message || "Database execution failure");
+                }
+            } catch (error) {
+                console.error("API Uplink Error:", error);
+                alert(`Uplink Error: ${error.message}`);
+                nextBtn.disabled = false;
+                nextBtn.innerHTML = `Submit Survey Form <i class="fa-solid fa-paper-plane ml-1"></i>`;
+            }
+        }
+
+        function showSuccessScreen(ticketId) {
+            document.getElementById(`screen-4`).classList.add('hidden');
+            document.getElementById('form-controls').classList.add('hidden');
+            document.getElementById('wizard-progress-bar').classList.add('hidden');
+            document.getElementById('success-ticket-id').innerText = ticketId;
+            document.getElementById('screen-success').classList.remove('hidden');
+        }
+
+        // Live Operational Lookup Ticket Engine
+        async function lookupTrackingTicket() {
+            const ticketInput = document.getElementById('track-ticket-input').value.trim();
+            const resultBox = document.getElementById('tracking-result-box');
+            const errorBox = document.getElementById('tracking-error-box');
+            
+            if (!ticketInput) return;
+
+            try {
+                const response = await fetch(`track_lookup.php?ticket_id=${encodeURIComponent(ticketInput)}`);
+                const data = await response.json();
+
+                if (data.status === "FOUND") {
+                    errorBox.classList.add('hidden');
+                    resultBox.classList.remove('hidden');
+
+                    document.getElementById('lbl-track-dept').innerText = data.target_department;
+                    document.getElementById('lbl-track-date').innerText = data.submitted_at;
+
+                    // Timeline State Tracker Elements Management
+                    resetTimelineGraphics();
+                    updateTimelineUI(data.lifecycle_status, data.proposed_action);
+                } else {
+                    resultBox.classList.add('hidden');
+                    errorBox.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Tracking Engine Lookup Failure:", err);
+                alert("Tracking system connection timeout.");
+            }
+        }
+
+        function resetTimelineGraphics() {
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`dot-step-${i}`).className = "absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-slate-300 border-4 border-white transition-all";
+                document.getElementById(`title-step-${i}`).className = "font-bold text-slate-700 text-xs uppercase";
+            }
+            document.getElementById('lbl-proposed-action-box').classList.add('hidden');
+        }
+
+        function updateTimelineUI(status, actionText) {
+            // Step 1: Active by default since it was found
+            document.getElementById('dot-step-1').classList.replace('bg-slate-300', 'bg-emerald-500');
+            document.getElementById('title-step-1').classList.add('text-emerald-600');
+
+            if (status === "Under Review" || status === "Action Plan Generated") {
+                document.getElementById('dot-step-2').classList.replace('bg-slate-300', 'bg-emerald-500');
+                document.getElementById('title-step-2').classList.add('text-emerald-600');
+            }
+            if (status === "Action Plan Generated") {
+                document.getElementById('dot-step-3').classList.replace('bg-slate-300', 'bg-emerald-500');
+                document.getElementById('title-step-3').classList.add('text-emerald-600');
+                
+                if (actionText) {
+                    document.getElementById('lbl-proposed-action-box').classList.remove('hidden');
+                    document.getElementById('lbl-proposed-action-text').innerText = actionText;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
